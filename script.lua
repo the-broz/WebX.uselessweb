@@ -14,6 +14,7 @@ get("flags_left").set_content("5 flags left.")
                     isMine = false,
                     hasBeenClicked = false,
                     isRevealed = false,
+                    flagged = false,
                     adjacentMines = 0
                 }
             end
@@ -73,7 +74,59 @@ get("flags_left").set_content("5 flags left.")
     local EMOJIS = {
         ["bomb_hit"] = "💥",
         ["flagged"] = "🚩",
+        ["misplace"]= "❌",
     }
+
+    local function revealBoard()
+        for i, row in ipairs(boardGui) do
+            for j, cell in ipairs(row) do
+                if board[i][j].isMine then
+                    cell.set_content(EMOJIS["bomb_hit"])
+                else
+                    cell.set_content(board[i][j].adjacentMines)
+                end
+            end
+        end
+    end
+    
+    -- Function to check for misplaced flags
+    local function checkMisplacedFlags()
+        for i, row in ipairs(boardGui) do
+            for j, cell in ipairs(row) do
+                if board[i][j].flagged and not board[i][j].isMine then
+                    cell.set_content(EMOJIS["misplace"])  -- Set content to indicate misplaced flag
+                end
+            end
+        end
+    end
+
+    local function checkWin()
+        local totalNonMineCells = 0
+        local revealedNonMineCells = 0
+        for i, row in ipairs(boardGui) do
+            for j, cell in ipairs(row) do
+                if not board[i][j].isMine then
+                    totalNonMineCells = totalNonMineCells + 1
+                    if board[i][j].isRevealed then
+                        revealedNonMineCells = revealedNonMineCells + 1
+                    end
+                end
+            end
+        end
+        -- If all non-mine cells have been revealed, the user wins
+        if totalNonMineCells == revealedNonMineCells then
+            return true
+        else
+            return false
+        end
+    end
+    
+    -- Function to handle game end
+    local function endGame()
+        GAME_ACTIVE = false
+        revealBoard()
+        checkMisplacedFlags()
+    end
 
     -- Function to handle button clicks
     local function handleClick(i, j)
@@ -83,12 +136,14 @@ get("flags_left").set_content("5 flags left.")
                     board[i][j].hasBeenClicked = true
                     if FLAGS_LEFT > 0 then
                         boardGui[i][j].set_content(EMOJIS["flagged"])
+                        board[i][j].flagged = true
                         FLAGS_LEFT = FLAGS_LEFT - 1
                     else
                         if board[i][j].isMine then
                             boardGui[i][j].set_content(EMOJIS["bomb_hit"])
-                            GAME_ACTIVE = false
+                            board[i][j].flagged = false
                             get("status").set_content("STATUS: YOU LOSE.")
+                            endGame()
                         else
                             boardGui[i][j].set_content(board[i][j].adjacentMines)
                         end
@@ -97,14 +152,19 @@ get("flags_left").set_content("5 flags left.")
                     FLAGS_LEFT = FLAGS_LEFT + 1
                     if board[i][j].isMine then
                         boardGui[i][j].set_content(EMOJIS["bomb_hit"])
-                        GAME_ACTIVE = false
+                        board[i][j].flagged = false
                         get("status").set_content("STATUS: YOU LOSE.")
+                        endGame()
                     else
                         boardGui[i][j].set_content(board[i][j].adjacentMines)
                     end
                 end
             end
             get("flags_left").set_content(FLAGS_LEFT.." flags left.")
+            if checkWin() then
+                GAME_ACTIVE = false
+                get("status").set_content("STATUS: YOU WIN! 🎉🎉")  -- Indicate win when all non-mine cells are revealed
+            end
         end
     end
 
