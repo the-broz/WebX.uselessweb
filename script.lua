@@ -136,7 +136,11 @@ function initializeGame(rows, cols, numMines)
     local function handleClick(i, j)
         return function()
             if GAME_ACTIVE then
-                if not board[i][j].hasBeenClicked then
+                if board[i][j].flagged then
+                    board[i][j].flagged = false
+                    boardGui[i][j].set_content("?")
+                    FLAGS_LEFT = FLAGS_LEFT + 1
+                elseif not board[i][j].hasBeenClicked then
                     board[i][j].hasBeenClicked = true
                     if board[i][j].isMine then
                         boardGui[i][j].set_content(EMOJIS["bomb_hit"])
@@ -145,10 +149,6 @@ function initializeGame(rows, cols, numMines)
                     else
                         revealAdjacentZeros(i, j)
                     end
-                elseif board[i][j].flagged then
-                    board[i][j].flagged = false
-                    boardGui[i][j].set_content("?")
-                    FLAGS_LEFT = FLAGS_LEFT + 1
                 else
                     boardGui[i][j].set_content(EMOJIS["flagged"])
                     board[i][j].flagged = true
