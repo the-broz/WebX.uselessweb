@@ -133,15 +133,12 @@ function initializeGame(rows, cols, numMines)
         return totalNonMineCells == revealedNonMineCells
     end
 
-    local function handleClick(i, j)
-        return function()
-            if GAME_ACTIVE then
-                if not board[i][j].hasBeenClicked then
-                    board[i][j].hasBeenClicked = true
-                    board[i][j].flagged = true
-                    boardGui[i][j].set_content(EMOJIS["flagged"])
-                    FLAGS_LEFT = FLAGS_LEFT - 1
-                else
+   local function handleClick(i, j)
+    return function()
+        if GAME_ACTIVE then
+            if not board[i][j].hasBeenClicked then
+                board[i][j].hasBeenClicked = true
+                if not board[i][j].flagged then
                     if board[i][j].isMine then
                         boardGui[i][j].set_content(EMOJIS["bomb_hit"])
                         get("status").set_content("STATUS: YOU LOSE.")
@@ -151,18 +148,18 @@ function initializeGame(rows, cols, numMines)
                     end
                 end
             end
-            get("flags_left").set_content(FLAGS_LEFT.." flags left.")
-            if checkWin() then
-                GAME_ACTIVE = false
-                get("status").set_content("STATUS: YOU WIN!")
-            end
+        end
+        get("flags_left").set_content(FLAGS_LEFT.." flags left.")
+        if checkWin() then
+            GAME_ACTIVE = false
+            get("status").set_content("STATUS: YOU WIN!")
         end
     end
+end
 
-    for i, row in ipairs(boardGui) do
-        for j, cell in ipairs(row) do
-            cell.on_click(handleClick(i, j))
-        end
+for i, row in ipairs(boardGui) do
+    for j, cell in ipairs(row) do
+        cell.on_click(handleClick(i, j))
     end
 end
 
