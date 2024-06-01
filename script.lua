@@ -1,6 +1,6 @@
+local board = {}
 -- Define the function to initialize the game
 function initializeGame(rows, cols, numMines)
-    local board = {}
     local FLAGS_LEFT = 5
 local GAME_ACTIVE = true
 get("status").set_content("STATUS: GAME STARTED.")
