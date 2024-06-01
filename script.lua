@@ -73,6 +73,7 @@ get("flags_left").set_content("5 flags left.")
     -- Define emojis for different states
     local EMOJIS = {
         ["bomb_hit"] = "💥",
+        ["bomb"] = "💣",
         ["flagged"] = "🚩",
         ["misplace"]= "❌",
     }
@@ -80,8 +81,8 @@ get("flags_left").set_content("5 flags left.")
     local function revealBoard()
         for i, row in ipairs(boardGui) do
             for j, cell in ipairs(row) do
-                if board[i][j].isMine then
-                    cell.set_content(EMOJIS["bomb_hit"])
+                if board[i][j].isMine and not board[i][j].isRevealed then
+                    cell.set_content(EMOJIS["bomb"])
                 else
                     cell.set_content(board[i][j].adjacentMines)
                 end
@@ -159,6 +160,7 @@ get("flags_left").set_content("5 flags left.")
                     else
                         board[i][j].flagged = false
                         if board[i][j].isMine then
+                            board[i][j].isRevealed = true
                             boardGui[i][j].set_content(EMOJIS["bomb_hit"])
                             get("status").set_content("STATUS: YOU LOSE.")
                             endGame()
@@ -168,9 +170,10 @@ get("flags_left").set_content("5 flags left.")
                     end
                 else
                     FLAGS_LEFT = FLAGS_LEFT + 1
+                    board[i][j].flagged = false
                     if board[i][j].isMine then
+                        board[i][j].isRevealed = true
                         boardGui[i][j].set_content(EMOJIS["bomb_hit"])
-                        board[i][j].flagged = false
                         get("status").set_content("STATUS: YOU LOSE.")
                         endGame()
                     else
