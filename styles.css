@@ -1,0 +1,10 @@
+cont {
+    align-items: center;
+    gap: 10;
+}
+
+grid {
+    direction: row;
+    align-items: center;
+    gap: 10;
+}
