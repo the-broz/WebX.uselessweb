@@ -3,6 +3,10 @@ cont {
     gap: 10;
 }
 
+body {
+    background-color: #000
+}
+
 grid {
     direction: row;
     align-items: center;
