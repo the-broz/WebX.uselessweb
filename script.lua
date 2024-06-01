@@ -120,6 +120,24 @@ get("flags_left").set_content("5 flags left.")
             return false
         end
     end
+
+    local function revealAdjacentZeros(row, col)
+        if row < 1 or row > #board or col < 1 or col > #board[1] then
+            return
+        end
+        if board[row][col].isRevealed or board[row][col].isMine or board[row][col].flagged then
+            return
+        end
+        boardGui[row][col].set_content(board[row][col].adjacentMines)
+        board[row][col].isRevealed = true
+        if board[row][col].adjacentMines == 0 then
+            for x = -1, 1 do
+                for y = -1, 1 do
+                    revealAdjacentZeros(row + x, col + y)
+                end
+            end
+        end
+    end
     
     -- Function to handle game end
     local function endGame()
@@ -145,7 +163,7 @@ get("flags_left").set_content("5 flags left.")
                             get("status").set_content("STATUS: YOU LOSE.")
                             endGame()
                         else
-                            boardGui[i][j].set_content(board[i][j].adjacentMines)
+                            revealAdjacentZeros(i, j)
                         end
                     end
                 else
@@ -156,7 +174,7 @@ get("flags_left").set_content("5 flags left.")
                         get("status").set_content("STATUS: YOU LOSE.")
                         endGame()
                     else
-                        boardGui[i][j].set_content(board[i][j].adjacentMines)
+                        revealAdjacentZeros(i, j)
                     end
                 end
             end
