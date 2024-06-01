@@ -157,9 +157,9 @@ get("flags_left").set_content("5 flags left.")
                         board[i][j].flagged = true
                         FLAGS_LEFT = FLAGS_LEFT - 1
                     else
+                        board[i][j].flagged = false
                         if board[i][j].isMine then
                             boardGui[i][j].set_content(EMOJIS["bomb_hit"])
-                            board[i][j].flagged = false
                             get("status").set_content("STATUS: YOU LOSE.")
                             endGame()
                         else
