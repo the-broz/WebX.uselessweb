@@ -133,47 +133,35 @@ function initializeGame(rows, cols, numMines)
         return totalNonMineCells == revealedNonMineCells
     end
 
-  local function handleClick(i, j)
-    return function()
-        if GAME_ACTIVE then
-            if not board[i][j].hasBeenClicked then
-                board[i][j].hasBeenClicked = true
-                if FLAGS_LEFT > 0 then
-                    boardGui[i][j].set_content(EMOJIS["flagged"])
-                    board[i][j].flagged = true
-                    FLAGS_LEFT = FLAGS_LEFT - 1
-                else
+   local function handleClick(i, j)
+        return function()
+            if GAME_ACTIVE then
+                if board[i][j].flagged then
+                    board[i][j].flagged = false
+                    boardGui[i][j].set_content("?")
+                    FLAGS_LEFT = FLAGS_LEFT + 1
+                elseif not board[i][j].hasBeenClicked then
+                    board[i][j].hasBeenClicked = true
                     if board[i][j].isMine then
                         boardGui[i][j].set_content(EMOJIS["bomb_hit"])
-                        board[i][j].flagged = false
                         get("status").set_content("STATUS: YOU LOSE.")
                         endGame()
                     else
                         revealAdjacentZeros(i, j)
                     end
-                end
-            else
-                FLAGS_LEFT = FLAGS_LEFT + 1
-                if board[i][j].isMine then
-                    boardGui[i][j].set_content(EMOJIS["bomb_hit"])
-                    board[i][j].flagged = false
-                    get("status").set_content("STATUS: YOU LOSE.")
-                    endGame()
                 else
-                    boardGui[i][j].set_content(board[i][j].adjacentMines)
+                    boardGui[i][j].set_content(EMOJIS["flagged"])
+                    board[i][j].flagged = true
+                    FLAGS_LEFT = FLAGS_LEFT - 1
                 end
             end
-        end
-        get("flags_left").set_content(FLAGS_LEFT.." flags left.")
-        if checkWin() then
-            GAME_ACTIVE = false
-            get("status").set_content("STATUS: YOU WIN!")
-        elseif FLAGS_LEFT == 0 and GAME_ACTIVE then
-            endGame()
-            get("status").set_content("STATUS: YOU LOSE.")
+            get("flags_left").set_content(FLAGS_LEFT.." flags left.")
+            if checkWin() then
+                GAME_ACTIVE = false
+                get("status").set_content("STATUS: YOU WIN!")
+            end
         end
     end
-end
 
 for i, row in ipairs(boardGui) do
     for j, cell in ipairs(row) do
