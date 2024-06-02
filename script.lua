@@ -138,15 +138,17 @@ function initializeGame(rows, cols, numMines)
         if GAME_ACTIVE then
             if not board[i][j].hasBeenClicked then
                 board[i][j].hasBeenClicked = true
-                if not board[i][j].flagged then
+                     boardGui[i][j].set_content(EMOJIS["flagged"])
+                    FLAGS_LEFT = FLAGS_LEFT - 1
+                else
                     if board[i][j].isMine then
                         boardGui[i][j].set_content(EMOJIS["bomb_hit"])
                         get("status").set_content("STATUS: YOU LOSE.")
                         endGame()
                     else
+                        LAGS_LEFT = FLAGS_LEFT + 1
                         revealAdjacentZeros(i, j)
                     end
-                end
             end
         end
         get("flags_left").set_content(FLAGS_LEFT.." flags left.")
