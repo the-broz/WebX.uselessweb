@@ -141,9 +141,14 @@ function initializeGame(rows, cols, numMines)
                         if not board[i][j].flagged then
                             boardGui[i][j].set_content(EMOJIS["flagged"])
                             board[i][j].flagged = true
+                             board[i][j].hasBeenClicked = true
                             FLAGS_LEFT = FLAGS_LEFT - 1
                         end
                     else
+                        if board[i][j].flagged then
+                             FLAGS_LEFT = FLAGS_LEFT + 1
+                                board[i][j].flagged = false
+                            end
                         if board[i][j].isMine then
                             boardGui[i][j].set_content(EMOJIS["bomb_hit"])
                             get("status").set_content("STATUS: YOU LOSE.")
