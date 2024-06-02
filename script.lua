@@ -133,7 +133,7 @@ function initializeGame(rows, cols, numMines)
         return totalNonMineCells == revealedNonMineCells
     end
 
-   local function handleClick(i, j)
+    local function handleClick(i, j)
         return function()
             if GAME_ACTIVE then
                 if board[i][j].flagged then
@@ -163,9 +163,10 @@ function initializeGame(rows, cols, numMines)
         end
     end
 
-for i, row in ipairs(boardGui) do
-    for j, cell in ipairs(row) do
-        cell.on_click(handleClick(i, j))
+    for i, row in ipairs(boardGui) do
+        for j, cell in ipairs(row) do
+            cell.on_click(handleClick(i, j))
+        end
     end
 end
 
