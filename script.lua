@@ -138,9 +138,11 @@ function initializeGame(rows, cols, numMines)
             if GAME_ACTIVE then
                 if not board[i][j].hasBeenClicked then
                     if FLAGS_LEFT > 0 then
-                        boardGui[i][j].set_content(EMOJIS["flagged"])
-                        board[i][j].flagged = true
-                        FLAGS_LEFT = FLAGS_LEFT - 1
+                        if not board[i][j].flagged then
+                            boardGui[i][j].set_content(EMOJIS["flagged"])
+                            board[i][j].flagged = true
+                            FLAGS_LEFT = FLAGS_LEFT - 1
+                        end
                     else
                         if board[i][j].isMine then
                             boardGui[i][j].set_content(EMOJIS["bomb_hit"])
@@ -181,8 +183,8 @@ end
 
 initializeGame(5, 5, 5)
 
-function restartGame()
-    initializeGame(5, 5, 5)
+function restartGame() 
+    initializeGame(5, 5, 5) 
 end
 
 local restartButton = get("reset")
