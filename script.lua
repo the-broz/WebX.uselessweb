@@ -133,28 +133,44 @@ function initializeGame(rows, cols, numMines)
         return totalNonMineCells == revealedNonMineCells
     end
 
-   local function handleClick(i, j)
+  local function handleClick(i, j)
     return function()
         if GAME_ACTIVE then
             if not board[i][j].hasBeenClicked then
                 board[i][j].hasBeenClicked = true
-                     boardGui[i][j].set_content(EMOJIS["flagged"])
+                if FLAGS_LEFT > 0 then
+                    boardGui[i][j].set_content(EMOJIS["flagged"])
+                    board[i][j].flagged = true
                     FLAGS_LEFT = FLAGS_LEFT - 1
                 else
                     if board[i][j].isMine then
                         boardGui[i][j].set_content(EMOJIS["bomb_hit"])
+                        board[i][j].flagged = false
                         get("status").set_content("STATUS: YOU LOSE.")
                         endGame()
                     else
-                        LAGS_LEFT = FLAGS_LEFT + 1
                         revealAdjacentZeros(i, j)
                     end
+                end
+            else
+                FLAGS_LEFT = FLAGS_LEFT + 1
+                if board[i][j].isMine then
+                    boardGui[i][j].set_content(EMOJIS["bomb_hit"])
+                    board[i][j].flagged = false
+                    get("status").set_content("STATUS: YOU LOSE.")
+                    endGame()
+                else
+                    boardGui[i][j].set_content(board[i][j].adjacentMines)
+                end
             end
         end
         get("flags_left").set_content(FLAGS_LEFT.." flags left.")
         if checkWin() then
             GAME_ACTIVE = false
             get("status").set_content("STATUS: YOU WIN!")
+        elseif FLAGS_LEFT == 0 and GAME_ACTIVE then
+            endGame()
+            get("status").set_content("STATUS: YOU LOSE.")
         end
     end
 end
